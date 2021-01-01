@@ -8,8 +8,7 @@ https://taisukef.github.io/boxcraft/simplest.html
 https://taisukef.github.io/boxcraft/  
 
 ## PanCakeカラーのサーバー保存機能付きのマイクラ風
-https://fukuno.jig.jp/3082  
-
+https://taisukef.github.io/boxcraft/color/static/  
 ```
 $ cd color
 $ deno run -A server.js
@@ -20,3 +19,5 @@ Oculus Quest - SSL経由でアクセスする必要あり
 $ brew install ngrok
 $ ngrok http 8882
 ```
+解説  
+https://fukuno.jig.jp/3082  
