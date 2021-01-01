@@ -1,27 +1,27 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"/>
 <title>boxcraft simplest for Oculus Quest</title>
 <script src="https://aframe.io/releases/1.1.0/aframe.min.js"></script>
-<script>'use strict'
+<script type="module">
 AFRAME.registerComponent('input-listen', {
 	init: function() {
 		this.el.addEventListener('triggerdown', function(evt) {
-			const p = this.object3D.getWorldPosition()
-			const size = 0.1
+			const p = this.object3D.getWorldPosition();
+			const size = 0.1;
 			const p2 = {
 				x: Math.floor(p.x / size) * size + size / 2,
 				y: Math.floor(p.y / size) * size + size / 2,
 				z: Math.floor(p.z / size) * size + size / 2
-			}
-			const box = document.createElement('a-box')
-			box.setAttribute('position', p2)
-			box.setAttribute('width', size)
-			box.setAttribute('height', size)
-			box.setAttribute('depth', size)
-			box.setAttribute('color', '#FFF')
-			scene.appendChild(box)
+			};
+			const box = document.createElement('a-box');
+			box.setAttribute('position', p2);
+			box.setAttribute('width', size);
+			box.setAttribute('height', size);
+			box.setAttribute('depth', size);
+			box.setAttribute('color', '#FFF');
+			scene.appendChild(box);
 		})
 	}
-})
+});
 </script></head><body>
 <a-scene id='scene'>
 	<a-sky color="#222"></a-sky>

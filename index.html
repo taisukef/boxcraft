@@ -6,35 +6,35 @@
 	<script src="https://aframe.io/releases/1.1.0/aframe.min.js"></script>
 </head>
 <body>
-<script>'use strict'
+<script type="module">
 window.onload = function() {
-	const scene = document.querySelector('a-scene')
-	const list = []
+	const scene = document.querySelector('a-scene');
+	const list = [];
 	handright.addEventListener('triggerdown', function(evt) {
-		const p = handright.getAttribute('position')
-		const snap = 0.1
+		const p = handright.getAttribute('position');
+		const snap = 0.1;
 		const p2 = {
 			x: Math.floor(p.x / snap) * snap + snap / 2,
 			y: Math.floor(p.y / snap) * snap + snap / 2,
 			z: Math.floor(p.z / snap) * snap + snap / 2,
-		}
-		const box = document.createElement('a-box')
-		box.setAttribute('position', p2)
-		box.setAttribute('mixin', 'voxel')
-		scene.appendChild(box)
-		list.push(box)
-	})
+		};
+		const box = document.createElement('a-box');
+		box.setAttribute('position', p2);
+		box.setAttribute('mixin', 'voxel');
+		scene.appendChild(box);
+		list.push(box);
+	});
 	handright.addEventListener('gripdown', function(evt) {
-		const b = list.pop()
+		const b = list.pop();
 		if (b)
-			scene.removeChild(b)
-	})
+			scene.removeChild(b);
+	});
 	handright.addEventListener('bbuttondown', function(evt) {
-		const boxes = scene.querySelectorAll('a-box')
+		const boxes = scene.querySelectorAll('a-box');
 		for (let i = 0; i < boxes.length; i++)
-			scene.removeChild(boxes[i])
-	})
-}
+			scene.removeChild(boxes[i]);
+	});
+};
 </script>
 <a-scene>
 	<a-assets>

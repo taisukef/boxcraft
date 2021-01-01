@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>boxcraft color for Oculus Quest - A-Frame</title>
+	<!-- https://aframe.io/ -->
+	<script src="https://aframe.io/releases/1.1.0/aframe.min.js"></script>
+	<!-- https://github.com/supermedium/aframe-environment-component -->
+	<script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+</head>
+<body>
+<script type="module">
+import { PANCAKE_COLORS } from "./PANCAKE_COLORS.js";
+
+window.onload = () => {
+	const scene = document.querySelector("a-scene");
+	const list = [];
+
+	let color = "#fff";
+	const setColor = (c) => color = c;
+	let ncolor = 1;
+	const nextColor = () => {
+		ncolor = (ncolor + 1) % 16;
+		const c = PANCAKE_COLORS[ncolor];
+		color = "#" + c.map(c => {
+			const n = c.toString(16);
+			return n.length === 1 ? "0" + n : n;
+		}).join("");
+		line.setAttribute("color", color);
+	};
+
+	const put = (p) => {
+		const size = 1 / 32;
+		const p2 = {
+			x: Math.floor(p.x / size) * size + size / 2,
+			y: Math.floor(p.y / size) * size + size / 2,
+			z: Math.floor(p.z / size) * size + size / 2,
+		};
+		const box = document.createElement("a-box");
+		box.setAttribute("position", p2);
+		box.setAttribute("width", size);
+		box.setAttribute("height", size);
+		box.setAttribute("depth", size);
+		box.setAttribute("color", color);
+		scene.appendChild(box);
+		list.push(box);
+	};
+	const undo = () => {
+		const b = list.pop();
+		if (b) {
+			scene.removeChild(b);
+		}
+	};
+	const clear = () => {
+		for (const b of list) {
+			scene.removeChild(b);
+		}
+		list.length = 0;
+	};
+	const save = () => {
+		const data = [];
+		for (const b of list) {
+			const p = b.getAttribute("position");
+			const c = b.getAttribute("color");
+			data.push({ x: p.x, y: p.y, z: p.z, c });
+		}
+		console.log(data);
+		const headers = { "Content-Type": "application/json" };
+		const req = { name: "test", data };
+		fetch("./api/", { method: "POST", headers, body: JSON.stringify(req) });
+		console.log("api", data);
+	};
+	const load = async () => {
+		const req = { name: "test" };
+		const headers = { "Content-Type": "application/json" };
+		//const data = await (await fetch("./api/", { method: "POST", headers, body: JSON.stringify(req) })).json();
+		const data = await (await fetch("./api/test.json")).json();
+		console.log(data);
+		/*
+		const data = [
+			{ x: 0, y: 0, z: 2, c: "#F00" },
+			{ x: 1, y: 0, z: 2, c: "#F00" },
+		];
+		*/
+		clear();
+		for (const b of data) {
+			setColor(b.c);
+			put(b);
+		}
+	};
+	// test
+	/*
+	for (let i = 0; i < 20; i++) {
+		put({ x: -1 + i / 12, y: 0, z: 2 });
+		nextColor();
+	}
+	*/
+	//save();
+	load();
+
+	// UX
+	// https://github.com/aframevr/aframe/blob/master/docs/components/oculus-touch-controls.md
+	handright.addEventListener("triggerdown", (e) => {
+		put(handright.getAttribute("position"));
+	});
+	handright.addEventListener("gripdown", (e) => {
+		undo();
+	});
+	handright.addEventListener("abuttondown", (e) => {
+		nextColor();
+	});
+	handright.addEventListener("bbuttondown", (e) => {
+		clear();
+	});
+	handleft.addEventListener("xbuttondown", (e) => {
+		save();
+	});
+	handleft.addEventListener("ybuttondown", (e) => {
+		load();
+	});
+};
+</script>
+<a-scene>
+	<a-entity environment="preset: default"></a-entity>
+	<a-entity id="handright" oculus-touch-controls="hand: right">
+		<!--<a-cone id="line" line="start: 0, 0, 0; end: 0 0 -.1; color: white"></a-entity>-->
+		<!--<a-cone id="line" radius-top="0" radius-bottom="0.01" height=".1" position="0 0 .05" rotate="0 0 90" color="white"></a-cone>-->
+		<a-box id="line" width="0.03125" height="0.03125" depth="0.03125" color="white"></a-box>
+	</a-entity>
+	<a-entity id="handleft" oculus-touch-controls="hand: left"></a-entity>
+	<a-light type="point" color="white" position="0 2 1"></a-light>
+	<a-entity rotation="0 -10 0">
+		<a-camera position="0.0 0.5 -.1"
+			animation="property: position; to: 1.8 0.5 -.1; dur: 2000; easing: easeInExpo; loop: true"
+		></a-camera>
+	</a-entity>
+</a-scene>
+</body>
+</html>
