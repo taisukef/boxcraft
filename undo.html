@@ -10,6 +10,7 @@
 AFRAME.registerComponent("input-control", {
 	init: function () {
 		const scene = document.querySelector('a-scene');
+		const list = [];
 		this.el.addEventListener('triggerdown', (e) => {
 			const p = handright.getAttribute('position');
 			const snap = 0.1;
@@ -18,22 +19,21 @@ AFRAME.registerComponent("input-control", {
 				y: Math.floor(p.y / snap) * snap + snap / 2,
 				z: Math.floor(p.z / snap) * snap + snap / 2,
 			};
-			for (const box of scene.querySelectorAll("a-box")) {
-				const p3 = box.object3D.position;
-				if (p3.x == p2.x && p3.y == p2.y && p3.z == p2.z) {
-					scene.removeChild(box);
-					return
-				}
-			}
 			const box = document.createElement('a-box');
 			box.setAttribute('position', p2);
 			box.setAttribute('mixin', 'voxel');
 			scene.appendChild(box);
+			list.push(box);
+		});
+		this.el.addEventListener('gripdown', (e) => {
+			const b = list.pop();
+			if (b)
+				scene.removeChild(b);
 		});
 		this.el.addEventListener('bbuttondown', (e) => {
-			for (const box of scene.querySelectorAll('a-box')) {
-				scene.removeChild(box);
-			}
+			const boxes = scene.querySelectorAll('a-box');
+			for (let i = 0; i < boxes.length; i++)
+				scene.removeChild(boxes[i]);
 		});
 	}
 });
