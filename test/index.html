@@ -6,17 +6,47 @@
     <script src="./aframe-master.min.js"></script>
   </head>
   <body>
-    <a-scene>
+    <a-scene id=scene>
+      <a-mixin id="voxel"
+        geometry="primitive: box; height: 0.1; width: 0.1; depth: 0.1"
+        material="shader: standard">
+      </a-mixin>
+  
       <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
       <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
       <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
       <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
       <!--<a-sky color="#ECECEC"></a-sky>-->
-      <a-entity id="me" rotation="0 0 0">
-        <a-entity oculus-touch-controls="hand: left"></a-entity>
-        <a-entity oculus-touch-controls="hand: right"></a-entity>
-      </a-entity>
-      
+      <a-entity id=handright oculus-touch-controls="hand: right"></a-entity>
+      <a-entity id=handleft oculus-touch-controls="hand: left"></a-entity>
     </a-scene>
   </body>
+
+<script>
+handright.addEventListener((e) => {
+  const p = handright.getAttribute('position');
+  const snap = 0.1;
+  const p2 = {
+    x: Math.floor(p.x / snap) * snap + snap / 2,
+    y: Math.floor(p.y / snap) * snap + snap / 2,
+    z: Math.floor(p.z / snap) * snap + snap / 2,
+  };
+  for (const box of scene.querySelectorAll("a-box")) {
+    const p3 = box.object3D.position;
+    if (p3.x == p2.x && p3.y == p2.y && p3.z == p2.z) {
+      scene.removeChild(box);
+      return
+    }
+  }
+  const box = document.createElement('a-box');
+  box.setAttribute('position', p2);
+  box.setAttribute('mixin', 'voxel');
+  scene.appendChild(box);
+});
+handright.addEventListener('bbuttondown', (e) => {
+  for (const box of scene.querySelectorAll('a-box')) {
+    scene.removeChild(box);
+  }
+});
+</script>
 </html>
